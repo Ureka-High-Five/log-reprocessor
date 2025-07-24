@@ -28,8 +28,6 @@ jobs:
           echo "DB_NAME=testdb" >> .env
           echo "W2V_MODEL_PATH=./app/assets/word2vec.model" >> .env
           echo "MONGO_URL=mongodb://localhost:27017" >> .env
-          echo "RABBITMQ_URL=localhost" >> .env
-          echo "RABBITMQ_PORT=5672" >> .env
           echo "DEV_REDIS_HOST=localhost" >> .env
           echo "DEV_REDIS_PORT=6379" >> .env
 
