@@ -10,6 +10,8 @@ class LocalSettings(BaseSettings):
     DB_NAME: str
     W2V_MODEL_PATH: str
     MONGO_URL: str
+    DEV_REDIS_HOST: str
+    DEV_REDIS_PORT: int
 
     model_config = SettingsConfigDict(
         env_file=str(Path(__file__).resolve().parent.parent.parent / ".env"),
