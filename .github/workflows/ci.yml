@@ -1,0 +1,40 @@
+name: CI (log-reprocessor)
+
+on:
+  pull_request:
+    branches: [develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: set up .env
+        run: |
+          echo "DB_HOST=localhost" >> .env
+          echo "DB_PORT=5432" >> .env
+          echo "DB_USERNAME=testuser" >> .env
+          echo "DB_PASSWORD=testpass" >> .env
+          echo "DB_NAME=testdb" >> .env
+          echo "W2V_MODEL_PATH=./app/assets/word2vec.model" >> .env
+          echo "MONGO_URL=mongodb://localhost:27017" >> .env
+          echo "RABBITMQ_URL=localhost" >> .env
+          echo "RABBITMQ_PORT=5672" >> .env
+          echo "DEV_REDIS_HOST=localhost" >> .env
+          echo "DEV_REDIS_PORT=6379" >> .env
+
+      - name: Lint (ruff) & Unit-test (pytest)
+        run: |
+          pip install ruff pytest
+          ruff check .
+          pytest -q || [ $? -eq 5 ]
