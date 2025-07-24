@@ -1,0 +1,18 @@
+.env
+
+# 가상환경
+venv/
+
+# 파이썬 캐시 파일
+__pycache__/
+*.py[cod]
+
+# IDE 설정
+.vscode/
+.idea/
+
+# 기타
+*.log
+
+# w2v 모델
+GoogleNews-vectors-negative300.bin.gz
