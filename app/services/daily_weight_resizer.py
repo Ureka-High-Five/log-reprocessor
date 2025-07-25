@@ -18,7 +18,7 @@ from app.repositories.user_weight_repository import UserWeightRepository
 
 MAX_RETRIES = 3
 RETRY_DELAY_SEC = 1
-LOG_PREFIX = "[daily_weight_resizer]"
+LOG_PREFIX = "[actionlog_status_update_failed]"
 
 async def resize_weight(
     action_log_repo: ActionLogRepository,
