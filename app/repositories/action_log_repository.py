@@ -21,3 +21,12 @@ class ActionLogRepository:
             {"_id": _id}, {"$set": {"status": "SUCCESS"}}
         )
         return result.modified_count
+    
+    async def get_status_by_id(self, _id: str) -> str | None:
+
+        doc = await self.collection.find_one(
+            {"_id": _id},
+            {"status": 1, "_id": 0} 
+        )
+        return doc["status"] if doc else None
+
