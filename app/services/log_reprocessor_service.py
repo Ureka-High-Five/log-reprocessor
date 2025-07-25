@@ -8,12 +8,12 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 
 async def retry_failed_logs(mongo_client: AsyncIOMotorClient):
-    repo = ManagedActionLogRepository(mongo_client)
+    managed_repo = ManagedActionLogRepository(mongo_client)
     weight_repo = UserWeightRepository(mongo_client)
     action_log_repo = ActionLogRepository(mongo_client)
 
     try: 
-        failed_logs = await repo.find_failed_logs()
+        failed_logs = await managed_repo.find_failed_logs()
     except Exception as e:
             logging.error(
                 f"[actionlog_status_update_failed] 보상트랜잭션 실패, error: {e}"
@@ -27,7 +27,7 @@ async def retry_failed_logs(mongo_client: AsyncIOMotorClient):
             status = await action_log_repo.get_status_by_id(log["_id"])
 
             if status == "SUCCESS":
-                await repo.delete_by_id(log["_id"]) # 이미 성공적으로 처리된 로그는 삭제
+                await managed_repo.delete_by_id(log["_id"]) # 이미 성공적으로 처리된 로그는 삭제
                 print(f"❗ 이미 가중치가 업데이트된 로그입니다: {log['_id']}")
                 continue
         except Exception as e:
@@ -46,7 +46,7 @@ async def retry_failed_logs(mongo_client: AsyncIOMotorClient):
             continue
 
         try:
-            await repo.delete_by_id(log["_id"])
+            await managed_repo.delete_by_id(log["_id"])
         except Exception as e:
             logging.error(
                 f"[actionlog_status_update_failed] 보상트랜잭션 실패, log_id: {log['_id']}, error: {e}"
