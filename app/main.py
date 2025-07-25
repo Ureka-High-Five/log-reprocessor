@@ -1,5 +1,6 @@
 import asyncio
 from app.logging import setup_logging
+from app.repositories.managed_action_log_repository import ManagedActionLogRepository
 from app.services.scheduler.retry_scheduler import load_retry_failed_log_scheduler
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
@@ -30,13 +31,15 @@ async def load_daily_weight_scheduler(app: FastAPI):
     user_weight_repo = UserWeightRepository(mongo_client)
     async def schedule_resize_weight():
         await resize_weight(action_log_repo, user_weight_repo)
+        managed_action_log_repository = ManagedActionLogRepository(mongo_client)
+        await managed_action_log_repository.delete_all()
 
     loop = asyncio.get_running_loop()
 
     def schedule_resize_weight_wrapper():
         asyncio.run_coroutine_threadsafe(schedule_resize_weight(), loop)
 
-    scheduler.add_job(schedule_resize_weight_wrapper, "cron", hour=21, minute=34)
+    scheduler.add_job(schedule_resize_weight_wrapper, "cron", hour=3, minute=0)
     scheduler.start()
 
     print("✅ Daily Weight Scheduler 설정 완료")

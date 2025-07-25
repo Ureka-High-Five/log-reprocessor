@@ -71,9 +71,9 @@ async def resize_weight(
 
         try:
             await redis.save_user_vector(user_id, vector_str)
-            print(f'✅ 사용자 {user_id} 벡터 Redis 저장 완료')
+            print(f'✅ daily weight resizer - 사용자 {user_id} 벡터 Redis 저장 완료')
         except Exception as e:
-            print(f'❌ 사용자 {user_id} 벡터 Redis 저장 실패: {e}')
+            print(f'❌ daily weight resizer - 사용자 {user_id} 벡터 Redis 저장 실패: {e}')
 
         # 실패 로그 재시도
         for user_id, genre_name, resize_weight in failed:
