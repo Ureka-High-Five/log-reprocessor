@@ -16,4 +16,4 @@ class ManagedActionLogRepository:
 
     async def delete_all(self):
         await self.collection.delete_many({})
-        print(f'✅ daily weight resizer - managed action log 모두 삭제 완료')
+        print('✅ daily weight resizer - managed action log 모두 삭제 완료')
