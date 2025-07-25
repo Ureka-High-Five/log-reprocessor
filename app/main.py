@@ -17,8 +17,6 @@ from app.repositories.action_log_repository import ActionLogRepository
 from app.repositories.user_weight_repository import UserWeightRepository
 
 setup_logging()
-
-setup_logging()
 logger = getLogger(__name__)
 
 async def load_db(app: FastAPI):
