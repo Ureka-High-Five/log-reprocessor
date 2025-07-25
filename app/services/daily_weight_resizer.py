@@ -76,7 +76,7 @@ async def resize_weight(
             try:
                 await user_weight_repo.reset_weight(user_id, genre_name, resized_weight)
                 break
-            except Exception as e:
+            except Exception:
                 failed.append((user_id, genre_name, resize_weight))
 
         await asyncio.sleep(5)
@@ -110,7 +110,7 @@ async def resize_weight(
                 await redis.save_user_vector(user_id, vector_str)
                 print(f'{LOG_PREFIX} 사용자 {user_id} 벡터 Redis 저장 완료')
                 break
-            except Exception:
+            except Exception as e:
                 if attempt < MAX_RETRIES:
                     await gen_warning_log(f"[{attempt}/{MAX_RETRIES}] Redis 저장 재시도", e)
                 else:
