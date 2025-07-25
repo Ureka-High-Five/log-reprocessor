@@ -15,6 +15,7 @@ from app.services.daily_weight_resizer import remove_managed_action_log, resize_
 from app.repositories.action_log_repository import ActionLogRepository
 from app.repositories.user_weight_repository import UserWeightRepository
 
+setup_logging()
 
 async def load_db(app: FastAPI):
     # MongoDB 연결
@@ -51,6 +52,7 @@ async def load_model():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    
     await load_db(app)
     await init_redis()
     await load_model()
@@ -77,7 +79,5 @@ app.include_router(scheduler_router.router)
 
 
 if __name__ == "__main__":
-    setup_logging()
     import uvicorn
-
     uvicorn.run("app.main:app", host="0.0.0.0", port=8001, reload=True)
