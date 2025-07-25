@@ -90,3 +90,51 @@ class UserWeightRepository:
         filter = {"user_id": user_id, "name": genre}
         update = {"$set": {"weight": weight}}
         await self.collection.update_one(filter, update, upsert=True)
+
+    async def decrease_user_weights_from_log(self, log: dict, weight: float):
+        user_id = log["userId"]
+        meta_info = log.get("metaInfo", {})
+
+        operations = []
+
+        for genre in meta_info.get("genres", []):
+            name = db_w2v_mapper.translate_genre(genre)
+            operations.append(
+                UpdateOne(
+                    {"user_id": user_id, "name": name},
+                    {"$inc": {"weight": -weight}},  
+                    upsert=False, 
+                )
+            )
+
+        director = meta_info.get("director")
+        if director:
+            operations.append(
+                UpdateOne(
+                    {"user_id": user_id, "name": director},
+                    {"$inc": {"weight": -weight}},
+                    upsert=False,
+                )
+            )
+
+        for actor in meta_info.get("actors", []):
+            operations.append(
+                UpdateOne(
+                    {"user_id": user_id, "name": actor},
+                    {"$inc": {"weight": -weight}},
+                    upsert=False,
+                )
+            )
+
+        country = meta_info.get("country")
+        if country:
+            operations.append(
+                UpdateOne(
+                    {"user_id": user_id, "name": country},
+                    {"$inc": {"weight": -weight}},
+                    upsert=False,
+                )
+            )
+
+        if operations:
+            await self.collection.bulk_write(operations)
