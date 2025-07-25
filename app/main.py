@@ -1,5 +1,8 @@
 import asyncio
-from app.logging import setup_logging
+from logging import getLogger
+
+from app.logger import setup_logging
+from app.models.word2vec_model import Word2VecModel
 from app.repositories.managed_action_log_repository import ManagedActionLogRepository
 from app.services.scheduler.retry_scheduler import load_retry_failed_log_scheduler
 from fastapi import FastAPI
@@ -7,8 +10,7 @@ from contextlib import asynccontextmanager
 from motor.motor_asyncio import AsyncIOMotorClient
 from apscheduler.schedulers.background import BackgroundScheduler
 
-from app.models.word2vec_model import Word2VecModel
-from app.router import scheduler_router
+from app.router import scheduler_router, test_log
 from app.services.redis import close_redis, init_redis
 from app.settings import settings
 from app.services.scheduler_service import resize_weight
@@ -16,6 +18,7 @@ from app.repositories.action_log_repository import ActionLogRepository
 from app.repositories.user_weight_repository import UserWeightRepository
 
 setup_logging()
+logger = getLogger(__name__)
 
 async def load_db(app: FastAPI):
     # MongoDB 연결
@@ -77,6 +80,7 @@ def read_root():
 
 
 app.include_router(scheduler_router.router)
+app.include_router(test_log.router)
 
 
 if __name__ == "__main__":
