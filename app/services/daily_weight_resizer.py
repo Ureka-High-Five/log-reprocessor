@@ -75,7 +75,6 @@ async def resize_weight(
         for genre_name, resized_weight in genre_dict.items():
             try:
                 await user_weight_repo.reset_weight(user_id, genre_name, resized_weight)
-                break
             except Exception:
                 failed.append((user_id, genre_name, resize_weight))
 
@@ -83,21 +82,18 @@ async def resize_weight(
         for actor_name, resized_weight in actor_dict.items():
             try:
                 await user_weight_repo.reset_weight(user_id, actor_name, resized_weight)
-                break
             except Exception:
                 failed.append((user_id, actor_name, resize_weight))
 
         for director_name, resized_weight in director_dict.items():
             try:
                 await user_weight_repo.reset_weight(user_id, director_name, resized_weight)
-                break
             except Exception:
                 failed.append((user_id, director_name, resize_weight))
 
         for country_name, resized_weight in country_dict.items():
             try:
                 await user_weight_repo.reset_weight(user_id, country_name, resized_weight)
-                break
             except Exception:
                 failed.append((user_id, country_name, resize_weight))
                 
