@@ -16,7 +16,7 @@ async def retry_failed_logs(mongo_client: AsyncIOMotorClient):
         failed_logs = await repo.find_failed_logs()
     except Exception as e:
             logging.error(
-                f"[actionlog_status_update_failed] 보상트랜잭션 실패, log_id: {log['_id']}, error: {e}"
+                f"[actionlog_status_update_failed] 보상트랜잭션 실패, error: {e}"
             )
             return
 
