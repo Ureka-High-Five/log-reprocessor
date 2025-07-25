@@ -1,7 +1,6 @@
 import asyncio
 from app.logging import setup_logging
 from app.services.scheduler.retry_scheduler import load_retry_failed_log_scheduler
-import asyncpg
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from motor.motor_asyncio import AsyncIOMotorClient
