@@ -49,7 +49,7 @@ async def load_daily_weight_scheduler(app: FastAPI):
     
 
 async def load_model():
-    #Word2VecModel.load_model(settings.W2V_MODEL_PATH)
+    Word2VecModel.load_model(settings.W2V_MODEL_PATH)
     print("✅ Word2Vec 모델 로드 완료")
 
 
