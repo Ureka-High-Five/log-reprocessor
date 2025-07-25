@@ -1,9 +1,7 @@
 from fastapi import APIRouter, Request
-from functools import partial
 from app.repositories.action_log_repository import ActionLogRepository
 from app.repositories.user_weight_repository import UserWeightRepository
-from app.repositories.postgresql.meta_info_repository import get_genres_by_content_id
-from app.services.scheduler_service import resize_weight
+from app.services.daily_weight_resizer import resize_weight
 
 router = APIRouter()
 
