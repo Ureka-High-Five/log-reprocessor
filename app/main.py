@@ -36,7 +36,7 @@ async def load_daily_weight_scheduler(app: FastAPI):
     def schedule_resize_weight_wrapper():
         asyncio.run_coroutine_threadsafe(schedule_resize_weight(), loop)
 
-    scheduler.add_job(schedule_resize_weight_wrapper, "cron", hour=21, minute=34)
+    scheduler.add_job(schedule_resize_weight_wrapper, "cron", hour=3, minute=0)
     scheduler.start()
 
     print("✅ Daily Weight Scheduler 설정 완료")
