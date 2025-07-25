@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  api:
+    image: ghkdwldus0807/lead-me-reprocessor:latest
+    container_name: log-rep
+    restart: unless-stopped
+    env_file:
+      - .env
+
+    volumes:
+      - ./app/models:/code/app/models
+
+    ports:
+      - "8001:8001"

@@ -1,0 +1,72 @@
+name: CD to EC2 (log-reprocessor)
+
+on:
+  push:
+    branches: [develop]
+
+concurrency:
+  group: cd-develop
+  cancel-in-progress: true
+
+env:
+  IMAGE_NAME: ${{ format('{0}/lead-me-reprocessor', secrets.DOCKERHUB_USERNAME) }}
+  TAG: ${{ github.sha }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ env.TAG }}
+            ${{ env.IMAGE_NAME }}:latest
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            set -e
+            cd ${{ secrets.EC2_PATH }}
+
+            echo "🔄 Git 최신 코드 pull"
+            git reset --hard
+            git clean -fd
+            git pull origin develop
+
+            echo ".env 재생성"
+            cat > .env <<'EOF'
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_PORT=${{ secrets.DB_PORT }}
+            DB_USERNAME=${{ secrets.DB_USERNAME }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            MONGO_URL=${{ secrets.MONGO_URL }}
+            DEV_REDIS_HOST=${{secrets.DEV_REDIS_HOST}}
+            DEV_REDIS_PORT=${{secrets.DEV_REDIS_PORT}}
+
+            RAG
+            W2V_MODEL_PATH=${{ secrets.W2V_MODEL_PATH }}
+            EOF
+
+            docker-compose down -v --remove-orphans
+            docker image prune -af
+            docker-compose pull
+            docker-compose up -d --force-recreate
+
+            echo "✅  배포 완료"
