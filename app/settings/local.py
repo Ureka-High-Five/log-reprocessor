@@ -3,10 +3,6 @@ from pathlib import Path
 
 
 class LocalSettings(BaseSettings):
-    DB_HOST: str
-    DB_PORT: int
-    DB_USERNAME: str
-    DB_PASSWORD: str
     DB_NAME: str
     W2V_MODEL_PATH: str
     MONGO_URL: str
