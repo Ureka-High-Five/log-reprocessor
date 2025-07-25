@@ -1,4 +1,6 @@
 import asyncio
+from app.logging import setup_logging
+from app.services.scheduler.retry_scheduler import load_retry_failed_log_scheduler
 import asyncpg
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
@@ -19,18 +21,6 @@ async def load_db(app: FastAPI):
     mongo_client = AsyncIOMotorClient(settings.MONGO_URL)
     app.state.mongo_client = mongo_client
     print("✅ MongoDB 연결 완료")
-
-    # PostgreSQL 연결
-    pg_pool = await asyncpg.create_pool(
-        host=settings.DB_HOST,
-        port=settings.DB_PORT,
-        database=settings.DB_NAME,
-        user=settings.DB_USERNAME,
-        password=settings.DB_PASSWORD,
-    )
-    app.state.pg_pool = pg_pool
-    print("✅ PostgreSQL 연결 완료")
-
 
 async def load_daily_weight_scheduler(app: FastAPI):
     scheduler = BackgroundScheduler(timezone='Asia/Seoul')
@@ -61,9 +51,11 @@ async def load_model():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await load_db(app)
-    await load_daily_weight_scheduler(app)
     await init_redis()
     await load_model()
+    await load_daily_weight_scheduler(app)
+    await load_retry_failed_log_scheduler(app)
+    
     yield
     print("🛑 앱 종료 중...")
     await close_redis()
@@ -84,6 +76,7 @@ app.include_router(scheduler_router.router)
 
 
 if __name__ == "__main__":
+    setup_logging()
     import uvicorn
 
     uvicorn.run("app.main:app", host="0.0.0.0", port=8001, reload=True)
