@@ -1,6 +1,5 @@
 import asyncio
 from app.logging import setup_logging
-from app.repositories.managed_action_log_repository import ManagedActionLogRepository
 from app.services.scheduler.retry_scheduler import load_retry_failed_log_scheduler
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
