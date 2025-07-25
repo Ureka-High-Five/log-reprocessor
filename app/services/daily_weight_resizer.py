@@ -84,21 +84,21 @@ async def resize_weight(
             try:
                 await user_weight_repo.reset_weight(user_id, actor_name, resized_weight)
                 break
-            except Exception as e:
+            except Exception:
                 failed.append((user_id, actor_name, resize_weight))
 
         for director_name, resized_weight in director_dict.items():
             try:
                 await user_weight_repo.reset_weight(user_id, director_name, resized_weight)
                 break
-            except Exception as e:
+            except Exception:
                 failed.append((user_id, director_name, resize_weight))
 
         for country_name, resized_weight in country_dict.items():
             try:
                 await user_weight_repo.reset_weight(user_id, country_name, resized_weight)
                 break
-            except Exception as e:
+            except Exception:
                 failed.append((user_id, country_name, resize_weight))
                 
         # resized 가중치 기반으로 벡터 계산
@@ -110,7 +110,7 @@ async def resize_weight(
                 await redis.save_user_vector(user_id, vector_str)
                 print(f'{LOG_PREFIX} 사용자 {user_id} 벡터 Redis 저장 완료')
                 break
-            except Exception as e:
+            except Exception:
                 if attempt < MAX_RETRIES:
                     await gen_warning_log(f"[{attempt}/{MAX_RETRIES}] Redis 저장 재시도", e)
                 else:
