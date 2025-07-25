@@ -30,14 +30,13 @@ async def resize_weight(
             all_logs = await action_log_repo.find_all_order_by_user_id()
             break
         except Exception as e:
-            gen_warning_log(f"[{attempt}/{MAX_RETRIES}] 로그 조회 실패", e)
+            await gen_warning_log(f"[{attempt}/{MAX_RETRIES}] 로그 조회 실패", e)
             if attempt < MAX_RETRIES:
                 await asyncio.sleep(RETRY_DELAY_SEC)
             else:
-                gen_error_log("모든 재시도 실패, 로그 조회 불가", e)
+                await gen_error_log("모든 재시도 실패, 로그 조회 불가", e)
                 print("💥 가중치 조회 실패")
                 return
-
 
     # 사용자별로 로그 분리
     grouped_logs = group_logs_by_user_id(all_logs)
@@ -71,14 +70,17 @@ async def resize_weight(
             director_dict[director] += resized_weight
             country_dict[country] += resized_weight
 
+        
         # MongoDB에 resized 가중치 저장
         for genre_name, resized_weight in genre_dict.items():
             try:
                 await user_weight_repo.reset_weight(user_id, genre_name, resized_weight)
+                raise Exception
                 break
             except:
                 failed.append((user_id, genre_name, resize_weight))
 
+        await asyncio.sleep(5)
         for actor_name, resized_weight in actor_dict.items():
             try:
                 await user_weight_repo.reset_weight(user_id, actor_name, resized_weight)
@@ -111,30 +113,30 @@ async def resize_weight(
                 break
             except Exception as e:
                 if attempt < MAX_RETRIES:
-                    gen_warning_log(f"[{attempt}/{MAX_RETRIES}] Redis 저장 재시도", e)
+                    await gen_warning_log(f"[{attempt}/{MAX_RETRIES}] Redis 저장 재시도", e)
                 else:
-                    gen_error_log(f"사용자 {user_id} 벡터 Redis 저장 실패", e)
+                    await gen_error_log(f"사용자 {user_id} 벡터 Redis 저장 실패", e)
 
-        # 실패 로그 재시도
-        error_logs_cnt = 0
-        if (len(failed) > 0):
-            for user_id, genre_name, resize_weight in failed:
-                for attempt in range(1, MAX_RETRIES + 1):
-                    try:
-                        await user_weight_repo.reset_weight(user_id, genre_name, resized_weight)
-                        break
-                    except Exception as e:
-                        if attempt < MAX_RETRIES:
-                            gen_warning_log(f"[{attempt}/{MAX_RETRIES}] 보상 트랜잭션 재시도", e)
-                        else:
-                            error_logs_cnt += 1
-                            gen_error_log(f"보상트랜잭션 실패, log_id: {log['_id']}", e)
-            if error_logs_cnt == 0:
-                print("✅ 보상 트랜잭션 재시도 성공")
-            else:
-                print(f"{LOG_PREFIX} 보상 트랜잭션 재시도 {error_logs_cnt}개 실패")
+    # 실패 로그 재시도
+    error_logs_cnt = 0
+    if (len(failed) > 0):
+        for user_id, genre_name, resized_weight in failed:
+            for attempt in range(1, MAX_RETRIES + 1):
+                try:
+                    await user_weight_repo.reset_weight(user_id, genre_name, resized_weight)
+                    break
+                except Exception as e:
+                    if attempt < MAX_RETRIES:
+                        await gen_warning_log(f"[{attempt}/{MAX_RETRIES}] 보상 트랜잭션 재시도", e)
+                    else:
+                        error_logs_cnt += 1
+                        await gen_error_log(f"보상트랜잭션 실패, log_id: {log['_id']}", e)
+        if error_logs_cnt == 0:
+            print("✅ 보상 트랜잭션 재시도 성공")
         else:
-            print(f"{LOG_PREFIX} 시도할 보상 트랜잭션 없음")
+            print(f"{LOG_PREFIX} 💥 보상 트랜잭션 재시도 {error_logs_cnt}개 실패")
+    else:
+        print(f"{LOG_PREFIX} 시도할 보상 트랜잭션 없음")
     print("✅ 가중치 resizing 완료")
     return
 
@@ -165,7 +167,7 @@ async def remove_managed_action_log():
             if attempt < MAX_RETRIES:
                 await asyncio.sleep(RETRY_DELAY_SEC)
             else:
-                gen_error_log("모든 재시도 실패, managed_action_log 삭제 불가", e)
+                await gen_error_log("모든 재시도 실패, managed_action_log 삭제 불가", e)
                 return
             
 async def gen_error_log(message: str, e: Exception):
