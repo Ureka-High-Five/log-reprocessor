@@ -2,6 +2,7 @@ import asyncio
 from logging import getLogger
 
 from app.logger import setup_logging
+from app.models.word2vec_model import Word2VecModel
 from app.repositories.managed_action_log_repository import ManagedActionLogRepository
 from app.services.scheduler.retry_scheduler import load_retry_failed_log_scheduler
 from fastapi import FastAPI
