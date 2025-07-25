@@ -15,7 +15,6 @@ async def retry_failed_logs(mongo_client: AsyncIOMotorClient):
     action_log_repo = ActionLogRepository(mongo_client)
 
     try:
-        raise RuntimeError("야호!")
         failed_logs = await managed_repo.find_failed_logs()
     except Exception as e:
             logger.error(
