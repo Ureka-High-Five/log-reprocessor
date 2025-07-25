@@ -15,7 +15,7 @@ async def load_retry_failed_log_scheduler(app):
         except Exception as e:
             print(f"[actionlog_status_update_failed] 보상트랜잭션 스케줄러 실행 실패: {e}")
 
-    scheduler.add_job(run_retry_job, "cron", second="*/10")
+    scheduler.add_job(run_retry_job, "cron", minute="*/1")
     scheduler.start()
 
     print("✅ Retry Failed Log Scheduler 설정 완료")
