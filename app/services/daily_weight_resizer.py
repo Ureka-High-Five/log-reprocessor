@@ -20,6 +20,8 @@ MAX_RETRIES = 3
 RETRY_DELAY_SEC = 1
 LOG_PREFIX = "[actionlog_status_update_failed]"
 
+logger = logging.getLogger(__name__)
+
 async def resize_weight(
     action_log_repo: ActionLogRepository,
     user_weight_repo: UserWeightRepository,
@@ -166,7 +168,7 @@ async def remove_managed_action_log():
                 return
             
 async def gen_error_log(message: str, e: Exception):
-    return logging.error(f"{LOG_PREFIX} {message} , error : {e}")
+    return logger.error(f"{LOG_PREFIX} {message} , error : {e}")
 
 async def gen_warning_log(message: str, e: Exception):
-    return logging.warning(f"{LOG_PREFIX} {message} , error : {e}")
+    return logger.warning(f"{LOG_PREFIX} {message} , error : {e}")
