@@ -10,6 +10,19 @@ services:
 
     volumes:
       - ./app/models:/code/app/models
+      - ./logs:/code/logs
 
     ports:
       - "8001:8001"
+
+  promtail:
+    image: grafana/promtail:2.9.4
+    container_name: promtail
+    volumes:
+      - ./logs:/code/logs:ro
+      - ./promtail-config.yml:/code/promtail-config.yml
+    command: -config.file=/code/promtail-config.yml -config.expand-env=true
+    environment:
+      LOKI_SERVER_IP: ${LOKI_SERVER_IP}
+    depends_on:
+      - api
