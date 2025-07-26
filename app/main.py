@@ -1,9 +1,9 @@
 import asyncio
+
 from logging import getLogger
 
 from app.logger import setup_logging
 from app.models.word2vec_model import Word2VecModel
-from app.repositories.managed_action_log_repository import ManagedActionLogRepository
 from app.services.scheduler.retry_scheduler import load_retry_failed_log_scheduler
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
@@ -13,7 +13,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from app.router import scheduler_router, test_log
 from app.services.redis import close_redis, init_redis
 from app.settings import settings
-from app.services.scheduler_service import resize_weight
+from app.services.daily_weight_resizer import remove_managed_action_log, resize_weight
 from app.repositories.action_log_repository import ActionLogRepository
 from app.repositories.user_weight_repository import UserWeightRepository
 
@@ -35,8 +35,7 @@ async def load_daily_weight_scheduler(app: FastAPI):
     user_weight_repo = UserWeightRepository(mongo_client)
     async def schedule_resize_weight():
         await resize_weight(action_log_repo, user_weight_repo)
-        managed_action_log_repository = ManagedActionLogRepository(mongo_client)
-        await managed_action_log_repository.delete_all()
+        await remove_managed_action_log()
 
     loop = asyncio.get_running_loop()
 
