@@ -5,7 +5,9 @@ from pathlib import Path
 class LocalSettings(BaseSettings):
     DB_NAME: str
     W2V_MODEL_PATH: str
-    MONGO_URL: str
+    MONGO_DB_NAME: str
+    MONGO_DB_HOST: str
+    MONGO_DB_PORT: int
     DEV_REDIS_HOST: str
     DEV_REDIS_PORT: int
 

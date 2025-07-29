@@ -56,7 +56,9 @@ jobs:
             DB_USERNAME=${{ secrets.DB_USERNAME }}
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             DB_NAME=${{ secrets.DB_NAME }}
-            MONGO_URL=${{ secrets.MONGO_URL }}
+            MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME}}
+            MONGO_DB_HOST=${{ secrets.MONGO_DB_HOST}}
+            MONGO_DB_PORT=${{ secrets.MONGO_DB_PORT}}
             DEV_REDIS_HOST=${{secrets.DEV_REDIS_HOST}}
             DEV_REDIS_PORT=${{secrets.DEV_REDIS_PORT}}
             LOKI_SERVER_IP=${{secrets.LOKI_SERVER_IP}}

@@ -20,9 +20,11 @@ from app.repositories.user_weight_repository import UserWeightRepository
 setup_logging()
 logger = getLogger(__name__)
 
+MONGO_URI = f"mongodb://{settings.MONGO_DB_HOST}:{settings.MONGO_DB_PORT}/{settings.MONGO_DB_NAME}"
+
 async def load_db(app: FastAPI):
     # MongoDB 연결
-    mongo_client = AsyncIOMotorClient(settings.MONGO_URL)
+    mongo_client = AsyncIOMotorClient(settings.MONGO_URI)
     app.state.mongo_client = mongo_client
     print("✅ MongoDB 연결 완료")
 

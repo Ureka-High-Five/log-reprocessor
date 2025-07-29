@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 from pymongo import ASCENDING
 
@@ -22,7 +22,7 @@ class ActionLogRepository:
         )
         return result.modified_count
     
-    async def get_status_by_id(self, _id: str) -> str | None:
+    async def get_status_by_id(self, _id: str) -> Optional[str]:
 
         doc = await self.collection.find_one(
             {"_id": _id},
