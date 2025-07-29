@@ -24,7 +24,7 @@ MONGO_URI = f"mongodb://{settings.MONGO_DB_HOST}:{settings.MONGO_DB_PORT}/{setti
 
 async def load_db(app: FastAPI):
     # MongoDB 연결
-    mongo_client = AsyncIOMotorClient(settings.MONGO_URI)
+    mongo_client = AsyncIOMotorClient(MONGO_URI)
     app.state.mongo_client = mongo_client
     print("✅ MongoDB 연결 완료")
 
