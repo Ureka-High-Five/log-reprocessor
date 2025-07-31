@@ -24,3 +24,5 @@ def convert_to_weight(type: ActionType, value: float) -> float:
             return 0.3
         if value == 5:
             return 0.4
+    if type == ActionType.DISLIKE:
+        return -0.1
