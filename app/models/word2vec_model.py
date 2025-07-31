@@ -1,4 +1,4 @@
-from gensim.models import KeyedVectors
+from gensim.models import Word2Vec
 
 
 class Word2VecModel:
@@ -8,7 +8,7 @@ class Word2VecModel:
     def load_model(cls, model_path: str):
         if cls._model is None:
             print("모델 로딩 중...")
-            cls._model = KeyedVectors.load_word2vec_format(model_path, binary=True)
+            cls._model = Word2Vec.load(model_path)
             print("모델 로드 완료!")
         return cls._model
 
@@ -16,7 +16,7 @@ class Word2VecModel:
     def get_vector(cls, word: str):
         if cls._model is None:
             raise RuntimeError("모델이 아직 로드되지 않았습니다.")
-        return cls._model.get_vector(word)
+        return cls._model.wv.get_vector(word)
 
     @classmethod
     def similarity(cls, word1: str, word2: str) -> float:
