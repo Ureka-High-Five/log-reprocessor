@@ -58,19 +58,22 @@ async def resize_weight(
             # 가중치 resize
             resized_weight = exponential_decay_weight(weight, log['timestamp'])
 
-            # 각 장르에 가중치 적용
-            genres = log['metaInfo']['genres']
-            actors = log['metaInfo']['actors']
-            director = log['metaInfo']['director']
-            country = log['metaInfo']['country']
-            for genre in genres:
-                translated = db_w2v_mapper.translate_genre(genre)
+            meta = log.get('metaInfo', {})
+            genres = meta.get('genres', {})
+            actors = meta.get('actors', {})
+            directors = meta.get('director', {})
+            countries = meta.get('country', {})
+
+            for _, genre_name in genres.items():
+                translated = db_w2v_mapper.translate_genre(genre_name)
                 if translated:
                     genre_dict[translated] += resized_weight
-            for actor in actors:
-                actor_dict[actor] += resized_weight
-            director_dict[director] += resized_weight
-            country_dict[country] += resized_weight
+            for _, actor_name in actors.items():
+                actor_dict[actor_name] += resized_weight
+            for _, director_name in directors.items():
+                director_dict[director_name] += resized_weight
+            for _, country_name in countries.items():
+                country_dict[country_name] += resized_weight
 
         
         # MongoDB에 resized 가중치 저장
