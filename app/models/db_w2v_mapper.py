@@ -6,7 +6,7 @@ _genre_mapping = {
     "가족": "Family",
     "코미디": "Comedy",
     "애니메이션": "Animation",
-    "SF": "SF",
+    "SF": "Science Fiction",
     "다큐멘터리": "Documentary",
     "판타지": "Fantasy",
     "드라마": "Drama",
@@ -24,5 +24,13 @@ _genre_mapping = {
 }
 
 
-def translate_genre(korean_genre: str) -> str:
-    return _genre_mapping.get(korean_genre, korean_genre)
+def translate_genre(genre: str) -> str | None:
+    genre = genre.strip()
+
+    if genre in _genre_mapping:
+        return _genre_mapping[genre]
+
+    if genre in _genre_mapping.values():
+        return genre
+
+    return genre
