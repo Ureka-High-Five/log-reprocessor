@@ -17,3 +17,4 @@ __pycache__/
 
 # w2v 모델
 GoogleNews-vectors-negative300.bin.gz
+node2vec.model
