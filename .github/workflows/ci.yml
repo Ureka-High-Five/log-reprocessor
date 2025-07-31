@@ -26,7 +26,7 @@ jobs:
           echo "DB_USERNAME=testuser" >> .env
           echo "DB_PASSWORD=testpass" >> .env
           echo "DB_NAME=testdb" >> .env
-          echo "W2V_MODEL_PATH=./app/assets/word2vec.model" >> .env
+          echo "W2V_MODEL_PATH=./app/assets/node2vec.model" >> .env
           echo "MONGO_URL=mongodb://localhost:27017" >> .env
           echo "DEV_REDIS_HOST=localhost" >> .env
           echo "DEV_REDIS_PORT=6379" >> .env
