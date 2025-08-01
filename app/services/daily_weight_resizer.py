@@ -5,7 +5,6 @@ import time
 import numpy as np
 from collections import defaultdict
 import app
-from app.models import db_w2v_mapper
 from app.repositories.managed_action_log_repository import ManagedActionLogRepository
 from app.services import weight_strategy
 from app.enum.action_type import ActionType
