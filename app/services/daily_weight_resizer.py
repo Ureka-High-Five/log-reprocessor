@@ -65,10 +65,8 @@ async def resize_weight(
             countries = meta.get('country', {})
 
             for _, genre_name in genres.items():
-                translated = db_w2v_mapper.translate_genre(genre_name)
-                if translated:
-                    genre_dict[translated] += resized_weight
             for _, actor_name in actors.items():
+                genre_dict[genre_name] += resized_weight
                 actor_dict[actor_name] += resized_weight
             for _, director_name in directors.items():
                 director_dict[director_name] += resized_weight
