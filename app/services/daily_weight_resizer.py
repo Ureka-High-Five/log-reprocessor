@@ -5,7 +5,6 @@ import time
 import numpy as np
 from collections import defaultdict
 import app
-from app.models import db_w2v_mapper
 from app.repositories.managed_action_log_repository import ManagedActionLogRepository
 from app.services import weight_strategy
 from app.enum.action_type import ActionType
@@ -64,15 +63,13 @@ async def resize_weight(
             directors = meta.get('director', {})
             countries = meta.get('country', {})
 
-            for _, genre_name in genres.items():
-                translated = db_w2v_mapper.translate_genre(genre_name)
-                if translated:
-                    genre_dict[translated] += resized_weight
-            for _, actor_name in actors.items():
+            for _, genre_name in genres:
+                genre_dict[genre_name] += resized_weight
+            for _, actor_name in actors:
                 actor_dict[actor_name] += resized_weight
-            for _, director_name in directors.items():
+            for _, director_name in directors:
                 director_dict[director_name] += resized_weight
-            for _, country_name in countries.items():
+            for _, country_name in countries:
                 country_dict[country_name] += resized_weight
 
         
