@@ -7,4 +7,4 @@ def exponential_decay_weight(original_weight: float, event_timestamp_ms: int, la
     delta_days = int(delta_ms / (1000 * 60 * 60 * 24))
 
     decayed_weight = original_weight * math.exp(-lambda_ * delta_days)
-    return round(decayed_weight, 2)
+    return decayed_weight
