@@ -64,13 +64,13 @@ async def resize_weight(
             directors = meta.get('director', {})
             countries = meta.get('country', {})
 
-            for _, genre_name in genres.items():
-            for _, actor_name in actors.items():
+            for _, genre_name in genres:
                 genre_dict[genre_name] += resized_weight
+            for _, actor_name in actors:
                 actor_dict[actor_name] += resized_weight
-            for _, director_name in directors.items():
+            for _, director_name in directors:
                 director_dict[director_name] += resized_weight
-            for _, country_name in countries.items():
+            for _, country_name in countries:
                 country_dict[country_name] += resized_weight
 
         
