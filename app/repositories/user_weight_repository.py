@@ -13,7 +13,6 @@ class UserWeightRepository:
     ):
         operations = []
         for meta_id, name in meta_info:
-            name = db_w2v_mapper.translate_genre(name)
             operations.append(
                 UpdateOne(
                     {"user_id": user_id, "meta_info_id": meta_id},
@@ -34,8 +33,7 @@ class UserWeightRepository:
         operations = []
 
         # 1. 장르
-        for genre in meta_info.get("genres", []):
-            name = db_w2v_mapper.translate_genre(genre)
+        for name in meta_info.get("genres", []):
             operations.append(
                 UpdateOne(
                     {"user_id": user_id, "name": name},
@@ -95,8 +93,7 @@ class UserWeightRepository:
 
         operations = []
 
-        for genre in meta_info.get("genres", []):
-            name = db_w2v_mapper.translate_genre(genre)
+        for name in meta_info.get("genres", []):
             operations.append(
                 UpdateOne(
                     {"user_id": user_id, "name": name},
