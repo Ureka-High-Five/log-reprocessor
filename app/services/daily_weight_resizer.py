@@ -56,6 +56,7 @@ async def resize_weight(
             weight = weight_strategy.convert_to_weight(action_type, value)
             # 가중치 resize
             resized_weight = exponential_decay_weight(weight, log['timestamp'])
+            diff = resized_weight - weight
 
             meta = log.get('metaInfo', {})
             genres = meta.get('genres', {})
@@ -64,38 +65,38 @@ async def resize_weight(
             countries = meta.get('country', {})
 
             for _, genre_name in genres.items():
-                genre_dict[genre_name] += resized_weight
+                genre_dict[genre_name] += diff
             for _, actor_name in actors.items():
-                actor_dict[actor_name] += resized_weight
+                actor_dict[actor_name] += diff
             for _, director_name in directors.items():
-                director_dict[director_name] += resized_weight
+                director_dict[director_name] += diff
             for _, country_name in countries.items():
-                country_dict[country_name] += resized_weight
+                country_dict[country_name] += diff
 
         
         # MongoDB에 resized 가중치 저장
-        for genre_name, resized_weight in genre_dict.items():
+        for genre_name, diff in genre_dict.items():
             try:
-                await user_weight_repo.reset_weight(user_id, genre_name, resized_weight)
+                await user_weight_repo.update_user_weight(user_id, genre_name, diff)
             except Exception:
                 failed.append((user_id, genre_name, resize_weight))
 
         await asyncio.sleep(5)
-        for actor_name, resized_weight in actor_dict.items():
+        for actor_name, diff in actor_dict.items():
             try:
-                await user_weight_repo.reset_weight(user_id, actor_name, resized_weight)
+                await user_weight_repo.update_user_weight(user_id, actor_name, diff)
             except Exception:
                 failed.append((user_id, actor_name, resize_weight))
 
-        for director_name, resized_weight in director_dict.items():
+        for director_name, diff in director_dict.items():
             try:
-                await user_weight_repo.reset_weight(user_id, director_name, resized_weight)
+                await user_weight_repo.update_user_weight(user_id, director_name, diff)
             except Exception:
                 failed.append((user_id, director_name, resize_weight))
 
-        for country_name, resized_weight in country_dict.items():
+        for country_name, diff in country_dict.items():
             try:
-                await user_weight_repo.reset_weight(user_id, country_name, resized_weight)
+                await user_weight_repo.update_user_weight(user_id, country_name, diff)
             except Exception:
                 failed.append((user_id, country_name, resize_weight))
                 

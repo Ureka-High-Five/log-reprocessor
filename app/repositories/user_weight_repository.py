@@ -1,8 +1,6 @@
 from typing import List, Dict
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 from pymongo import UpdateOne
-
-from app.models import db_w2v_mapper
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 
 
 class UserWeightRepository:
@@ -86,9 +84,9 @@ class UserWeightRepository:
         results = await cursor.to_list(length=None)
         return results
 
-    async def reset_weight(self, user_id: int, genre: str, weight: float):
-        filter = {"user_id": user_id, "name": genre}
-        update = {"$set": {"weight": weight}}
+    async def update_user_weight(self, user_id: int, meta_info_name: str, diff: float):
+        filter = {"user_id": user_id, "name": meta_info_name}
+        update = {"$inc": {"weight": diff}}
         await self.collection.update_one(filter, update, upsert=True)
 
     async def decrease_user_weights_from_log(self, log: dict, weight: float):
