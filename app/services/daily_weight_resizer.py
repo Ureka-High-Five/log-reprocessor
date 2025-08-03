@@ -48,6 +48,7 @@ async def resize_weight(
         actor_dict = defaultdict(int)
         director_dict = defaultdict(int)
         country_dict = defaultdict(int)
+        genre_name_dict = defaultdict(int) # 벡터 업데이트용
         for log in logs:
             action_type = ActionType[log['action']]
             value = int(log['value'])
@@ -102,7 +103,7 @@ async def resize_weight(
                 failed.append((user_id, country_id, diff))
                 
         # resized 가중치 기반으로 벡터 계산
-        vector = calc_user_vector(genre_dict)
+        vector = calc_user_vector(genre_name_dict)
         vector_str = np.array2string(vector, separator=', ')
 
         for attempt in range(1, MAX_RETRIES + 1):
