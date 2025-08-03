@@ -136,7 +136,7 @@ async def resize_weight(
         else:
             print(f"💥 보상 트랜잭션 재시도 {error_logs_cnt}개 실패")
     else:
-        print(f"시도할 보상 트랜잭션 없음")
+        print("시도할 보상 트랜잭션 없음")
     print("✅ 가중치 resizing 완료")
     return
 
