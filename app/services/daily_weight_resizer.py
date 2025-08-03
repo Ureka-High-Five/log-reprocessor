@@ -64,41 +64,42 @@ async def resize_weight(
             directors = meta.get('director', {})
             countries = meta.get('country', {})
 
-            for _, genre_name in genres.items():
-                genre_dict[genre_name] += diff
-            for _, actor_name in actors.items():
-                actor_dict[actor_name] += diff
-            for _, director_name in directors.items():
-                director_dict[director_name] += diff
-            for _, country_name in countries.items():
-                country_dict[country_name] += diff
+            for meta_info_id, genre_name in genres.items():
+                genre_dict[meta_info_id] += diff
+                genre_name_dict[genre_name] += diff
+            for meta_info_id, _ in actors.items():
+                actor_dict[meta_info_id] += diff
+            for meta_info_id, _ in directors.items():
+                director_dict[meta_info_id] += diff
+            for meta_info_id, _ in countries.items():
+                country_dict[meta_info_id] += diff
 
         
         # MongoDB에 resized 가중치 저장
-        for genre_name, diff in genre_dict.items():
+        for genre_id, diff in genre_dict.items():
             try:
-                await user_weight_repo.update_user_weight(user_id, genre_name, diff)
+                await user_weight_repo.update_user_weight(user_id, genre_id, diff)
             except Exception:
-                failed.append((user_id, genre_name, resize_weight))
+                failed.append((user_id, genre_id, diff))
 
         await asyncio.sleep(5)
-        for actor_name, diff in actor_dict.items():
+        for actor_id, diff in actor_dict.items():
             try:
-                await user_weight_repo.update_user_weight(user_id, actor_name, diff)
+                await user_weight_repo.update_user_weight(user_id, actor_id, diff)
             except Exception:
-                failed.append((user_id, actor_name, resize_weight))
+                failed.append((user_id, actor_id, diff))
 
-        for director_name, diff in director_dict.items():
+        for director_id, diff in director_dict.items():
             try:
-                await user_weight_repo.update_user_weight(user_id, director_name, diff)
+                await user_weight_repo.update_user_weight(user_id, director_id, diff)
             except Exception:
-                failed.append((user_id, director_name, resize_weight))
+                failed.append((user_id, director_id, diff))
 
-        for country_name, diff in country_dict.items():
+        for country_id, diff in country_dict.items():
             try:
-                await user_weight_repo.update_user_weight(user_id, country_name, diff)
+                await user_weight_repo.update_user_weight(user_id, country_id, diff)
             except Exception:
-                failed.append((user_id, country_name, resize_weight))
+                failed.append((user_id, country_id, diff))
                 
         # resized 가중치 기반으로 벡터 계산
         vector = calc_user_vector(genre_dict)
@@ -118,10 +119,10 @@ async def resize_weight(
     # 실패 로그 재시도
     error_logs_cnt = 0
     if (len(failed) > 0):
-        for user_id, genre_name, resized_weight in failed:
+        for user_id, meta_info_id, diff in failed:
             for attempt in range(1, MAX_RETRIES + 1):
                 try:
-                    await user_weight_repo.reset_weight(user_id, genre_name, resized_weight)
+                    await user_weight_repo.update_user_weight(user_id, meta_info_id, diff)
                     break
                 except Exception as e:
                     if attempt < MAX_RETRIES:

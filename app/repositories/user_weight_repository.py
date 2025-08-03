@@ -82,8 +82,8 @@ class UserWeightRepository:
         results = await cursor.to_list(length=None)
         return results
 
-    async def update_user_weight(self, user_id: int, meta_info_name: str, diff: float):
-        filter = {"user_id": user_id, "name": meta_info_name}
+    async def update_user_weight(self, user_id: int, meta_info_id: str, diff: float):
+        filter = {"user_id": user_id, "meta_info_id": meta_info_id}
         update = {"$inc": {"weight": diff}}
         await self.collection.update_one(filter, update, upsert=True)
 
