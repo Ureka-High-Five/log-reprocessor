@@ -138,15 +138,6 @@ async def resize_weight(
     print("✅ 가중치 resizing 완료")
     return
 
-
-def calc_resized_weight(timestamp : int, weight : float):
-  current_timestamp_ms = int(time.time() * 1000)
-  delta_ms = current_timestamp_ms - timestamp
-  delta_days = delta_ms / (1000 * 60 * 60 * 24)
-
-  resized_weight = weight * math.exp(-1 * delta_days)
-  return resized_weight
-
 def group_logs_by_user_id(logs: List[Dict]) -> Dict[int, List[Dict]]:
     grouped = defaultdict(list)
     for log in logs:
