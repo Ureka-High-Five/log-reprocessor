@@ -109,7 +109,7 @@ async def resize_weight(
         for attempt in range(1, MAX_RETRIES + 1):
             try:
                 await redis.save_user_vector(user_id, vector_str)
-                print(f'{LOG_PREFIX} 사용자 {user_id} 벡터 Redis 저장 완료')
+                print(f'사용자 {user_id} 벡터 Redis 저장 완료')
                 break
             except Exception as e:
                 if attempt < MAX_RETRIES:
@@ -130,13 +130,13 @@ async def resize_weight(
                         await gen_warning_log(f"[{attempt}/{MAX_RETRIES}] 보상 트랜잭션 재시도", e)
                     else:
                         error_logs_cnt += 1
-                        await gen_error_log(f"보상트랜잭션 실패, log_id: {log['_id']}", e)
+                        await gen_error_log(f"보상 트랜잭션 실패, log_id: {log['_id']}", e)
         if error_logs_cnt == 0:
             print("✅ 보상 트랜잭션 재시도 성공")
         else:
-            print(f"{LOG_PREFIX} 💥 보상 트랜잭션 재시도 {error_logs_cnt}개 실패")
+            print(f"💥 보상 트랜잭션 재시도 {error_logs_cnt}개 실패")
     else:
-        print(f"{LOG_PREFIX} 시도할 보상 트랜잭션 없음")
+        print(f"시도할 보상 트랜잭션 없음")
     print("✅ 가중치 resizing 완료")
     return
 
