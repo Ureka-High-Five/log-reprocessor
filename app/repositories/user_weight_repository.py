@@ -1,8 +1,6 @@
 from typing import List, Dict
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 from pymongo import UpdateOne
-
-from app.models import db_w2v_mapper
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 
 
 class UserWeightRepository:
@@ -15,7 +13,6 @@ class UserWeightRepository:
     ):
         operations = []
         for meta_id, name in meta_info:
-            name = db_w2v_mapper.translate_genre(name)
             operations.append(
                 UpdateOne(
                     {"user_id": user_id, "meta_info_id": meta_id},
@@ -36,8 +33,7 @@ class UserWeightRepository:
         operations = []
 
         # 1. 장르
-        for genre in meta_info.get("genres", []):
-            name = db_w2v_mapper.translate_genre(genre)
+        for name in meta_info.get("genres", []):
             operations.append(
                 UpdateOne(
                     {"user_id": user_id, "name": name},
@@ -86,9 +82,9 @@ class UserWeightRepository:
         results = await cursor.to_list(length=None)
         return results
 
-    async def reset_weight(self, user_id: int, genre: str, weight: float):
-        filter = {"user_id": user_id, "name": genre}
-        update = {"$set": {"weight": weight}}
+    async def update_user_weight(self, user_id: int, meta_info_id: str, diff: float):
+        filter = {"user_id": user_id, "meta_info_id": meta_info_id}
+        update = {"$inc": {"weight": diff}}
         await self.collection.update_one(filter, update, upsert=True)
 
     async def decrease_user_weights_from_log(self, log: dict, weight: float):
@@ -97,8 +93,7 @@ class UserWeightRepository:
 
         operations = []
 
-        for genre in meta_info.get("genres", []):
-            name = db_w2v_mapper.translate_genre(genre)
+        for name in meta_info.get("genres", []):
             operations.append(
                 UpdateOne(
                     {"user_id": user_id, "name": name},
