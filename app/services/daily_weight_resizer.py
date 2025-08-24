@@ -78,7 +78,6 @@ async def resize_weight(
         for genre_id, diff in genre_dict.items():
             try:
                 await user_weight_repo.update_user_weight(user_id, genre_id, diff)
-                raise Exception
             except Exception:
                 failed.append((user_id, genre_id, diff))
 
@@ -123,7 +122,6 @@ async def resize_weight(
             for attempt in range(1, MAX_RETRIES + 1):
                 try:
                     await user_weight_repo.update_user_weight(user_id, meta_info_id, diff)
-                    raise Exception
                     break
                 except Exception as e:
                     if attempt < MAX_RETRIES:
