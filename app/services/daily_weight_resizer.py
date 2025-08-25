@@ -33,7 +33,7 @@ async def resize_weight(
             if attempt < MAX_RETRIES:
                 await asyncio.sleep(RETRY_DELAY_SEC)
             else:
-                await gen_error_log("모든 재시도 실패, 로그 조회 불가", e)
+                await gen_critical_log("모든 재시도 실패, 로그 조회 불가", e)
                 print("💥 가중치 조회 실패")
                 return
 
@@ -113,7 +113,7 @@ async def resize_weight(
                 if attempt < MAX_RETRIES:
                     await gen_warning_log(f"[{attempt}/{MAX_RETRIES}] Redis 저장 재시도", e)
                 else:
-                    await gen_error_log(f"사용자 {user_id} 벡터 Redis 저장 실패", e)
+                    await gen_critical_log(f"사용자 {user_id} 벡터 Redis 저장 실패", e)
 
     # 실패 로그 재시도
     error_logs_cnt = 0
@@ -128,7 +128,7 @@ async def resize_weight(
                         await gen_warning_log(f"[{attempt}/{MAX_RETRIES}] 보상 트랜잭션 재시도", e)
                     else:
                         error_logs_cnt += 1
-                        await gen_error_log(f"보상 트랜잭션 실패, log_id: {log['_id']}", e)
+                        await gen_critical_log(f"보상 트랜잭션 실패, log_id: {log['_id']}", e)
         if error_logs_cnt == 0:
             print("✅ 보상 트랜잭션 재시도 성공")
         else:
@@ -156,11 +156,11 @@ async def remove_managed_action_log():
             if attempt < MAX_RETRIES:
                 await asyncio.sleep(RETRY_DELAY_SEC)
             else:
-                await gen_error_log("모든 재시도 실패, managed_action_log 삭제 불가", e)
+                await gen_critical_log("모든 재시도 실패, managed_action_log 삭제 불가", e)
                 return
             
-async def gen_error_log(message: str, e: Exception):
-    return logger.error(f"{LOG_PREFIX} {message} , error : {e}")
+async def gen_critical_log(message: str, e: Exception):
+    return logger.critical(f"{LOG_PREFIX} {message} , error : {e}")
 
 async def gen_warning_log(message: str, e: Exception):
     return logger.warning(f"{LOG_PREFIX} {message} , error : {e}")
